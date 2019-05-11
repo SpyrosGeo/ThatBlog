@@ -1,10 +1,12 @@
 <% include ./partials/header%>
-<%blogs.forEach(function(blog){%>
+
 <div class="ui main text container" >
   <div class="ui huge header">
 Blog:
   </div>
+
   <div class="ui top attached segment">
+    <%blogs.forEach(function(blog){%>
     <div class="ui divided items">
       <div class="image">
           <img src="<%=blog.image %>" >
