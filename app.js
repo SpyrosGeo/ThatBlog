@@ -1,9 +1,16 @@
 var express = require("express");
 var mongoose = require("mongoose");
+var passport = require('passport');
+var LocalStrategy = require('passport-local');
 var bodyParser = require("body-parser");
 var methodOverride = require("method-override");
 var expressSanitizer = require("express-sanitizer");
 var app = express();
+//Models Require
+var Blog = require("./models/blog");
+var User = require("./models/user");
+
+
 mongoose.connect("mongodb://localhost/Sadblog", {
   useNewUrlParser: true
 });
@@ -17,19 +24,16 @@ app.use(expressSanitizer());
 /////////////////////////////////////////
 mongoose.set('useFindAndModify', false);
 ////////////////////////////////////////
-
-//SCHEMA model config
-var blogSchema = new mongoose.Schema({
-  title: String,
-  image: String,
-  body: String,
-  created: {
-    type: Date,
-    default: Date.now
-  }
-});
-
-var Blog = mongoose.model("Blog", blogSchema);
+app.use(require("express-session")({
+  secret:"kiba",
+  resave:false,
+  saveUninitialized:false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 //INDEX
 app.get("/", function(req, res) {
@@ -106,7 +110,46 @@ app.delete("/blogs/:id", function(req, res) {
     }
   });
 });
+//Register Route
+app.get("/register",function (req,res) {
+  res.render("register");
+});
 
+
+app.post("/register",function (req, res) {
+  var newUser = new User({username: req.body.username});
+  User.register(newUser,req.body.password,function (err,user) {
+    if (err) {
+      console.log('err:', err);
+      return res.render("register");
+    }
+    passport.authenticate("local")(req, res,function () {
+      console.log('user', user.username);
+      res.redirect("/blogs");
+    });
+  });
+});
+//LOGIN routes
+app.get("/login",function (req, res) {
+  res.render("login");
+});
+app.post("/login",passport.authenticate("local",{
+  successRedirect:"/blogs",
+  failureRedirect:"/login"
+
+}),function(req, res) {
+  // res.send("login logic hrouterens");
+});
+
+
+//Middleware
+    function isLoggedIn(req, res, next){
+      if (req.isAuthenticated()) {
+        return next();
+      } else {
+        res.redirect("/login");
+      }
+    }
 
 app.listen(8080, function() {
   console.log("server is up");
