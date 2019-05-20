@@ -4,7 +4,8 @@
   <div class="ui huge header">
 Blog:
   </div>
-  <%blogs.forEach(function(blog){%>
+  <!-- Used the reverse() so it shows the newst post first -->
+  <%blogs.reverse().forEach(function(blog){%>
   <div class="ui top attached segment">
 
     <div class="ui divided items">
