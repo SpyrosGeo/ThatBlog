@@ -34,6 +34,14 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+//Use current user in every Route
+app.use(function(req,res,next){
+  res.locals.currentUser = req.user;
+  next();
+});
+
+
+
 
 //INDEX
 app.get("/", function(req, res) {
@@ -141,6 +149,11 @@ app.post("/login",passport.authenticate("local",{
   // res.send("login logic hrouterens");
 });
 
+app.get("/logout",function (req, res) {
+  //comes with the packages that are installed
+  req.logout();
+  res.redirect("/blogs");
+});
 
 //Middleware
     function isLoggedIn(req, res, next){
