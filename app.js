@@ -109,7 +109,7 @@ app.put("/blogs/:id", function(req, res) {
   });
 });
 //DELETE route
-app.delete("/blogs/:id", function(req, res) {
+app.delete("/blogs/:id",isLoggedIn ,function(req, res) {
   Blog.findByIdAndRemove(req.params.id, function(err) {
     if (err) {
       res.redirect("/blogs");
