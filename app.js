@@ -63,7 +63,7 @@ app.get("/blogs/new", function(req, res) {
   res.render("new");
 });
 //CREATE route
-app.post("/blogs", function(req, res) {
+app.post("/blogs",isLoggedIn,function(req, res) {
   req.body.blog.body = req.sanitize(req.body.blog.body);
   Blog.create(req.body.blog, function(err, newBlog) {
     if (err) {
@@ -86,7 +86,7 @@ app.get("/blogs/:id", function(req, res) {
   });
 });
 //EDIT route
-app.get("/blogs/:id/edit", function(req, res) {
+app.get("/blogs/:id/edit",isLoggedIn,function(req, res) {
   Blog.findById(req.params.id, function(err, foundBlog) {
     if (err) {
       res.redirect("/blogs");
