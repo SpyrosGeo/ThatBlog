@@ -19,6 +19,7 @@ Blog:
         </div>
         <div class="description">
           <p><%- blog.body.substring(0,100) %></p>
+          <p>Created By : <%=blog.author.username %></p>
         </div>
         <div class="extra">
           <a class="ui floated button blue large" href="/blogs/<%=blog._id%>">Read more</a>

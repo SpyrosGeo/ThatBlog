@@ -64,8 +64,23 @@ app.get("/blogs/new", function(req, res) {
 });
 //CREATE route
 app.post("/blogs",isLoggedIn,function(req, res) {
+  var title = req.body.blog.title;
+  var image = req.body.blog.image;
+  var body  = req.body.blog.body;
+  var created = req.body.blog.created;
+  var author = {
+    id:req.user._id,
+    username:req.user.username
+  }
   req.body.blog.body = req.sanitize(req.body.blog.body);
-  Blog.create(req.body.blog, function(err, newBlog) {
+  var addBlog = {
+    title:title,
+    image:image,
+    body:body,
+    created:created,
+    author:author
+  }
+  Blog.create(addBlog, function(err, newBlog) {
     if (err) {
       res.render("new");
     } else {
