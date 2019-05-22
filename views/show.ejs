@@ -11,10 +11,12 @@
         <p>Created By : <%=blog.author.username %></p>
         <p><%- blog.body %></p>
       </div>
+    <%  if (currentUser&&blog.author.id.equals(currentUser._id)) { %>
         <a class="ui button blue basic small" href="/blogs/<%= blog._id %>/edit">Edit</a>
-      <form id="delete" action="/blogs/<%= blog._id %>?_method=DELETE" method="post">
+        <form id="delete" action="/blogs/<%= blog._id %>?_method=DELETE" method="post">
           <button class="button ui red basic small">Delete</button>
       </form>
+      <% } %>
     </div>
   </div>
 </div>
