@@ -1,4 +1,4 @@
-<% include ./partials/header%>
+<% include ../partials/header%>
 <div class="ui main text container segment">
   <div class="ui huge header"><%=blog.title%></div>
   <div class="ui top attached ">
@@ -7,9 +7,9 @@
       <div class="content">
         <span><%= blog.created.toDateString() %></span>
       </div>
-      <div class="description">
+      <div class=" ui description segment">
         <p>Created By : <%=blog.author.username %></p>
-        <p><%- blog.body %></p>
+        <p class="ui segment"><%- blog.body %></p>
       </div>
     <%  if (currentUser&&blog.author.id.equals(currentUser._id)) { %>
         <a class="ui button blue basic small" href="/blogs/<%= blog._id %>/edit">Edit</a>
@@ -17,7 +17,17 @@
           <button class="button ui red basic small">Delete</button>
       </form>
       <% } %>
+      <div class="ui  fluid-right">
+        <a  href="/blogs/<%= blog._id %>/comments/new"class="button ui  green basic mini inline">add comment</a>
+      </div>
     </div>
   </div>
+  <% blog.comments.forEach(function (comment) { %>
+      <div class="ui container segment">
+        <p><strong><%= comment.author.username %></strong> - <em><%= comment.text%></em> </p>
+
+  </div>
+  <% }) %>
+
 </div>
-<% include ./partials/footer%>
+<% include ../partials/footer%>

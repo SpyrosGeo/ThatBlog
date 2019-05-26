@@ -9,7 +9,8 @@ var app = express();
 //Models Require
 var Blog = require("./models/blog");
 var User = require("./models/user");
-
+var Comment = require("./models/comments");
+var seedDB = require('./seeds');
 
 mongoose.connect("mongodb://localhost/Sadblog", {
   useNewUrlParser: true
@@ -40,7 +41,7 @@ app.use(function(req,res,next){
   next();
 });
 
-
+// seedDB();
 
 
 //INDEX
@@ -52,7 +53,7 @@ app.get("/blogs", function(req, res) {
     if (err) {
       console.log('err', err);
     } else {
-      res.render("index", {
+      res.render("blog/index", {
         blogs: blogs
       });
     }
@@ -60,7 +61,7 @@ app.get("/blogs", function(req, res) {
 });
 //NEW route
 app.get("/blogs/new", function(req, res) {
-  res.render("new");
+  res.render("blog/new");
 });
 //CREATE route
 app.post("/blogs",isLoggedIn,function(req, res) {
@@ -82,7 +83,7 @@ app.post("/blogs",isLoggedIn,function(req, res) {
   }
   Blog.create(addBlog, function(err, newBlog) {
     if (err) {
-      res.render("new");
+      res.render("blog/new");
     } else {
       res.redirect("/blogs");
     }
@@ -90,30 +91,31 @@ app.post("/blogs",isLoggedIn,function(req, res) {
 });
 //SHOW route
 app.get("/blogs/:id", function(req, res) {
-  Blog.findById(req.params.id, function(err, foundBlog) {
+  Blog.findById(req.params.id).populate("comments").exec( function(err, foundBlog) {
     if (err) {
       res.redirect("/blogs");
     } else {
-      res.render("show", {
-        blog: foundBlog
+      console.log(foundBlog);
+      res.render("blog/show", {
+        blog: foundBlog,
       });
     }
   });
 });
 //EDIT route
-app.get("/blogs/:id/edit",checkOwnership,function(req, res) {
+app.get("/blogs/:id/edit",function(req, res) {
   Blog.findById(req.params.id, function(err, foundBlog) {
     if (err) {
       res.redirect("/blogs");
     } else {
-      res.render("edit", {
+      res.render("blog/edit", {
         blog: foundBlog
       });
     }
   });
 });
 //UPDATE Route
-app.put("/blogs/:id",checkOwnership,function(req, res) {
+app.put("/blogs/:id",function(req, res) {
   req.body.blog.body = req.sanitize(req.body.blog.body);
   Blog.findByIdAndUpdate(req.params.id, req.body.blog, function(err, updatedBlog) {
     if (err) {
@@ -147,7 +149,7 @@ app.post("/register",function (req, res) {
       return res.render("register");
     }
     passport.authenticate("local")(req, res,function () {
-      console.log('user', user.username);
+
       res.redirect("/blogs");
     });
   });
@@ -170,12 +172,40 @@ app.get("/logout",function (req, res) {
   res.redirect("/blogs");
 });
 
-
-//PROFILE Route
-app.get("/profile",function (req, res) {
-  res.render("profile");
+// COMMENTS route
+app.get("/blogs/:id/comments/new",isLoggedIn,function (req, res) {
+  Blog.findById(req.params.id,function (err,blog) {
+      if (err) {
+        console.log('err', err);
+      } else {
+        res.render("comments/new",{blog:blog});
+      }
+  });
 });
 
+app.post("/blogs/:id/comments",isLoggedIn,function (req, res) {
+Blog.findById(req.params.id,function (err,blog) {
+    if (err) {
+      console.log('err:', err);
+    } else {
+      console.log('blog:', blog);
+      Comment.create(req.body.comment,function (err,comment) {
+          if (err) {
+            console.log('err:', err);
+          }else{
+            comment.author.id = req.user._id;
+            comment.author.username =req.user.username;
+            blog.comments.push(comment);
+            //save comment
+            comment.save();
+            blog.save();
+            res.redirect("/blogs/"+blog._id);
+            // console.log(req.body.comment);
+          }
+          });
+        }
+      })
+    });
 
 
 //Middleware
