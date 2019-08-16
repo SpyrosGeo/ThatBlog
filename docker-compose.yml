@@ -5,7 +5,7 @@ services:
     restart: always
     build: ./
     ports:
-      - "9080:80"
+      - "9080:9080"
     volumes:
       - .:/app
     links:
