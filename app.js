@@ -12,7 +12,7 @@ var User = require("./models/user");
 var Comment = require("./models/comments");
 var seedDB = require('./seeds');
 
-mongoose.connect("mongodb://localhost/Sadblog", {
+mongoose.connect("mongodb://mongo:27017/Sadblog", {
   useNewUrlParser: true
 });
 app.set("view engine", "ejs");
@@ -234,6 +234,6 @@ Blog.findById(req.params.id,function (err,blog) {
         res.redirect("back");
       }
     }
-app.listen(8080, function() {
+app.listen(9080, function() {
   console.log("server is up");
 });
