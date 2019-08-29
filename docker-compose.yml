@@ -2,10 +2,11 @@ version: "3"
 services:
   app:
     container_name: thatblog
+    user: "1002:1002"
     restart: always
     build: ./
     ports:
-      - "9080:80"
+      - "9080:9080"
     volumes:
       - .:/app
     links:
@@ -13,5 +14,5 @@ services:
   mongo:
     container_name: mongo
     image: mongo
-    ports:
-      - "27017:27017"
+    #ports:
+    #  - "9081:9081"
