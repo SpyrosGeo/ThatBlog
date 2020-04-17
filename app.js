@@ -12,9 +12,14 @@ var User = require("./models/user");
 var Comment = require("./models/comments");
 var seedDB = require('./seeds');
 
-mongoose.connect("mongodb://mongo:27017/Sadblog", {
-  useNewUrlParser: true
-});
+const callMongose= async()=>{
+  await mongoose.connect("mongodb://mongo:27017/Sadblog", {
+    useNewUrlParser: true,
+    useUnifiedTopology:true
+  });
+}
+callMongose()
+
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({
